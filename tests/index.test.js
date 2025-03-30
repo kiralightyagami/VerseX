@@ -1,4 +1,5 @@
 const axios2 = require("axios");
+const WebSocket = require('ws');
 
 const BACKEND_URL = "http://localhost:3000"
 const WS_URL = "ws://localhost:3001"
@@ -477,7 +478,7 @@ describe("Arena endpoints", () => {
         adminId = signupResponse.data.userId
  
         const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-         username: username,
+         username,
          password
         })
  
@@ -789,7 +790,7 @@ describe("Admin Endpoints", () => {
     })
 });
 
-describe.skip("Websocket tests", () => {
+describe("Websocket tests", () => {
     let adminToken;
     let adminUserId;
     let userToken;
