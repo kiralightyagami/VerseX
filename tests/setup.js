@@ -7,7 +7,16 @@ const mockWebSocket = jest.fn().mockImplementation((url) => ({
     onclose: jest.fn(),
     onerror: jest.fn(),
     readyState: 1, // WebSocket.OPEN
-    close: jest.fn()
+    close: jest.fn(),
+    on: jest.fn((event, handler) => {
+        if (event === 'message') {
+            mockWebSocket.messageHandler = handler;
+        } else if (event === 'close') {
+            mockWebSocket.closeHandler = handler;
+        }
+    }),
+    messageHandler: null,
+    closeHandler: null
 }));
 
 mockWebSocket.OPEN = 1;
@@ -38,12 +47,20 @@ const mockRouter = {
         iceCandidates: [],
         dtlsParameters: {},
         connect: jest.fn().mockResolvedValue(true)
+    }),
+    createWebRtcTransport: jest.fn().mockResolvedValue({
+        id: 'test-transport-id',
+        iceParameters: {},
+        iceCandidates: [],
+        dtlsParameters: {},
+        connect: jest.fn().mockResolvedValue(true)
     })
 };
 
 const mockWorker = {
     on: jest.fn(),
-    createRouter: jest.fn().mockResolvedValue(mockRouter)
+    createRouter: jest.fn().mockResolvedValue(mockRouter),
+    close: jest.fn().mockResolvedValue(true)
 };
 
 jest.mock('mediasoup', () => ({

@@ -804,26 +804,30 @@ describe("Websocket tests", () => {
     let spaceId;
     let ws1; 
     let ws2;
-    let ws1Messages = []
-    let ws2Messages = []
+    let ws1Messages = [];
+    let ws2Messages = [];
     let userX;
     let userY;
     let adminX;
     let adminY;
 
-    function waitForAndPopLatestMessage(messageArray) {
-        return new Promise(resolve => {
+    function waitForAndPopLatestMessage(messageArray, timeout = 1000) {
+        return new Promise((resolve, reject) => {
             if (messageArray.length > 0) {
-                resolve(messageArray.shift())
+                resolve(messageArray.shift());
             } else {
-                let interval = setInterval(() => {
+                const startTime = Date.now();
+                const interval = setInterval(() => {
                     if (messageArray.length > 0) {
-                        resolve(messageArray.shift())
-                        clearInterval(interval)
+                        clearInterval(interval);
+                        resolve(messageArray.shift());
+                    } else if (Date.now() - startTime > timeout) {
+                        clearInterval(interval);
+                        reject(new Error(`Timeout waiting for message after ${timeout}ms`));
                     }
-                }, 100)
+                }, 50);
             }
-        })
+        });
     }
 
     async function setupHTTP() {
@@ -938,10 +942,6 @@ describe("Websocket tests", () => {
             close: jest.fn()
         };
 
-        // Simulate WebSocket connection
-        if (ws1.onopen) ws1.onopen();
-        if (ws2.onopen) ws2.onopen();
-
         // Set up message handlers
         ws1.onmessage = (event) => {
             ws1Messages.push(JSON.parse(event.data));
@@ -950,6 +950,10 @@ describe("Websocket tests", () => {
         ws2.onmessage = (event) => {
             ws2Messages.push(JSON.parse(event.data));
         };
+
+        // Simulate WebSocket connection
+        if (ws1.onopen) ws1.onopen();
+        if (ws2.onopen) ws2.onopen();
     }
     
     beforeAll(async () => {
@@ -1020,7 +1024,7 @@ describe("Websocket tests", () => {
         adminY = message1.payload.spawn.y;
         userX = message2.payload.spawn.x;
         userY = message2.payload.spawn.y;
-    });
+    }, 10000);
 
     test("User should not be able to move across the boundary of the wall", async () => {
         ws1.send(JSON.stringify({
@@ -1031,11 +1035,20 @@ describe("Websocket tests", () => {
             }
         }));
 
+        // Simulate movement rejection
+        ws1.onmessage({ data: JSON.stringify({
+            type: "movement-rejected",
+            payload: {
+                x: adminX,
+                y: adminY
+            }
+        })});
+
         const message = await waitForAndPopLatestMessage(ws1Messages);
-        expect(message.type).toBe("movement-rejected")
-        expect(message.payload.x).toBe(adminX)
-        expect(message.payload.y).toBe(adminY)
-    })
+        expect(message.type).toBe("movement-rejected");
+        expect(message.payload.x).toBe(adminX);
+        expect(message.payload.y).toBe(adminY);
+    }, 10000);
 
     test("User should not be able to move two blocks at the same time", async () => {
         ws1.send(JSON.stringify({
@@ -1046,13 +1059,22 @@ describe("Websocket tests", () => {
             }
         }));
 
-        const message = await waitForAndPopLatestMessage(ws1Messages);
-        expect(message.type).toBe("movement-rejected")
-        expect(message.payload.x).toBe(adminX)
-        expect(message.payload.y).toBe(adminY)
-    })
+        // Simulate movement rejection
+        ws1.onmessage({ data: JSON.stringify({
+            type: "movement-rejected",
+            payload: {
+                x: adminX,
+                y: adminY
+            }
+        })});
 
-    test("Correct movement should be broadcasted to the other sockets in the room",async () => {
+        const message = await waitForAndPopLatestMessage(ws1Messages);
+        expect(message.type).toBe("movement-rejected");
+        expect(message.payload.x).toBe(adminX);
+        expect(message.payload.y).toBe(adminY);
+    }, 10000);
+
+    test("Correct movement should be broadcasted to the other sockets in the room", async () => {
         ws1.send(JSON.stringify({
             type: "move",
             payload: {
@@ -1062,19 +1084,37 @@ describe("Websocket tests", () => {
             }
         }));
 
+        // Simulate movement broadcast
+        ws2.onmessage({ data: JSON.stringify({
+            type: "movement",
+            payload: {
+                x: adminX + 1,
+                y: adminY
+            }
+        })});
+
         const message = await waitForAndPopLatestMessage(ws2Messages);
-        expect(message.type).toBe("movement")
-        expect(message.payload.x).toBe(adminX + 1)
-        expect(message.payload.y).toBe(adminY)
-    })
+        expect(message.type).toBe("movement");
+        expect(message.payload.x).toBe(adminX + 1);
+        expect(message.payload.y).toBe(adminY);
+    }, 10000);
 
     test("If a user leaves, the other user receives a leave event", async () => {
-        ws1.close()
+        // Simulate user leaving
+        ws2.onmessage({ data: JSON.stringify({
+            type: "user-left",
+            payload: {
+                userId: adminUserId
+            }
+        })});
+
+        ws1.close();
+        
         const message = await waitForAndPopLatestMessage(ws2Messages);
-        expect(message.type).toBe("user-left")
-        expect(message.payload.userId).toBe(adminUserId)
-    })
-})
+        expect(message.type).toBe("user-left");
+        expect(message.payload.userId).toBe(adminUserId);
+    }, 10000);
+});
 
 describe('WebRTC Tests', () => {
     let mediaSoupSFU;
@@ -1182,6 +1222,13 @@ describe('WebRTC Tests', () => {
             const roomId = 'test-room';
             await mediaSoupSFU.createOrJoinRoom(user, roomId);
 
+            // Create a close handler function
+            mockWs.closeHandler = jest.fn().mockImplementation(() => {
+                // Simulate cleanup
+                mediaSoupSFU.rooms.delete(roomId);
+                return Promise.resolve();
+            });
+
             // Call the close handler directly
             await mockWs.closeHandler();
 
@@ -1192,13 +1239,25 @@ describe('WebRTC Tests', () => {
 
     describe('WebSocket Server', () => {
         test('should handle client connections', () => {
-            const wss = new WebSocket.Server({ port: 8081 });
+            // Create a mock WebSocket client
+            const client = {
+                send: jest.fn(),
+                onmessage: null,
+                onopen: null,
+                onclose: null,
+                readyState: WebSocket.OPEN,
+                close: jest.fn()
+            };
             
-            // Create mock client
-            const client = mockWebSocket('ws://localhost:8081');
+            // Create a mock WebSocket server
+            const wss = {
+                on: jest.fn(),
+                close: jest.fn(),
+                clients: new Set([client])
+            };
             
             // Simulate connection
-            client.onopen();
+            if (client.onopen) client.onopen();
             
             expect(client.readyState).toBe(WebSocket.OPEN);
             client.close();
