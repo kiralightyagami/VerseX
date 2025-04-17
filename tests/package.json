@@ -1,21 +1,25 @@
 {
   "name": "tests",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@types/ws": "^8.18.0",
-    "jest": "^29.7.0",
-    "ws": "^8.18.1"
-  },
   "dependencies": {
-    "axios": "^1.8.4",
-    "tests": "file:"
+    "axios": "^1.6.7",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/ws": "^8.5.10",
+    "jest": "^29.7.0",
+    "mediasoup": "^3.15.7",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.4.2"
   }
 }

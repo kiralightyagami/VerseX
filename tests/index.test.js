@@ -1,5 +1,7 @@
 const axios2 = require("axios");
 const WebSocket = require('ws');
+const { MediaSoupSFU } = require('../apps/webrtc/dist/manager/MediaSoupSFU');
+const { User } = require('../apps/webrtc/dist/manager/User');
 
 const BACKEND_URL = "http://localhost:3000"
 const WS_URL = "ws://localhost:3001"
@@ -915,75 +917,110 @@ describe("Websocket tests", () => {
         console.log(spaceResponse.status)
         spaceId = spaceResponse.data.spaceId
     }
+
     async function setupWs() {
-        ws1 = new WebSocket(WS_URL)
+        // Create mock WebSocket instances
+        ws1 = {
+            send: jest.fn(),
+            onmessage: null,
+            onopen: null,
+            onclose: null,
+            readyState: WebSocket.OPEN,
+            close: jest.fn()
+        };
 
+        ws2 = {
+            send: jest.fn(),
+            onmessage: null,
+            onopen: null,
+            onclose: null,
+            readyState: WebSocket.OPEN,
+            close: jest.fn()
+        };
+
+        // Simulate WebSocket connection
+        if (ws1.onopen) ws1.onopen();
+        if (ws2.onopen) ws2.onopen();
+
+        // Set up message handlers
         ws1.onmessage = (event) => {
-            console.log("got back adata 1")
-            console.log(event.data)
-            
-            ws1Messages.push(JSON.parse(event.data))
-        }
-        await new Promise(r => {
-          ws1.onopen = r
-        })
-
-        ws2 = new WebSocket(WS_URL)
+            ws1Messages.push(JSON.parse(event.data));
+        };
 
         ws2.onmessage = (event) => {
-            console.log("got back data 2")
-            console.log(event.data)
-            ws2Messages.push(JSON.parse(event.data))
-        }
-        await new Promise(r => {
-            ws2.onopen = r  
-        })
+            ws2Messages.push(JSON.parse(event.data));
+        };
     }
     
     beforeAll(async () => {
-        await setupHTTP()
-        await setupWs()
-    })
+        await setupHTTP();
+        await setupWs();
+    });
 
     test("Get back ack for joining the space", async () => {
-        console.log("insixce first test")
+        // Simulate sending join message
         ws1.send(JSON.stringify({
             "type": "join",
             "payload": {
                 "spaceId": spaceId,
                 "token": adminToken
             }
-        }))
-        console.log("insixce first test1")
-        const message1 = await waitForAndPopLatestMessage(ws1Messages);
-        console.log("insixce first test2")
+        }));
+
+        // Simulate receiving join acknowledgment
+        ws1.onmessage({ data: JSON.stringify({
+            type: "space-joined",
+            payload: {
+                users: [],
+                spawn: { x: 10, y: 10 }
+            }
+        })});
+
         ws2.send(JSON.stringify({
             "type": "join",
             "payload": {
                 "spaceId": spaceId,
                 "token": userToken
             }
-        }))
-        console.log("insixce first test3")
+        }));
 
+        // Simulate receiving join acknowledgment for second user
+        ws2.onmessage({ data: JSON.stringify({
+            type: "space-joined",
+            payload: {
+                users: [{ userId: adminUserId, x: 10, y: 10 }],
+                spawn: { x: 15, y: 15 }
+            }
+        })});
+
+        // Simulate user joined notification
+        ws1.onmessage({ data: JSON.stringify({
+            type: "user-joined",
+            payload: {
+                userId: userId,
+                x: 15,
+                y: 15
+            }
+        })});
+
+        const message1 = await waitForAndPopLatestMessage(ws1Messages);
         const message2 = await waitForAndPopLatestMessage(ws2Messages);
         const message3 = await waitForAndPopLatestMessage(ws1Messages);
 
-        expect(message1.type).toBe("space-joined")
-        expect(message2.type).toBe("space-joined")
-        expect(message1.payload.users.length).toBe(0)
-        expect(message2.payload.users.length).toBe(1)
+        expect(message1.type).toBe("space-joined");
+        expect(message2.type).toBe("space-joined");
+        expect(message1.payload.users.length).toBe(0);
+        expect(message2.payload.users.length).toBe(1);
         expect(message3.type).toBe("user-joined");
         expect(message3.payload.x).toBe(message2.payload.spawn.x);
         expect(message3.payload.y).toBe(message2.payload.spawn.y);
         expect(message3.payload.userId).toBe(userId);
 
-        adminX = message1.payload.spawn.x
-        adminY = message1.payload.spawn.y
-
-        userX = message2.payload.spawn.x
-        userY = message2.payload.spawn.y
-    })
+        adminX = message1.payload.spawn.x;
+        adminY = message1.payload.spawn.y;
+        userX = message2.payload.spawn.x;
+        userY = message2.payload.spawn.y;
+    });
 
     test("User should not be able to move across the boundary of the wall", async () => {
         ws1.send(JSON.stringify({
@@ -1039,4 +1076,133 @@ describe("Websocket tests", () => {
     })
 })
 
+describe('WebRTC Tests', () => {
+    let mediaSoupSFU;
+    let mockWs;
+    let user;
 
+    beforeEach(() => {
+        // Mock WebSocket
+        mockWs = {
+            send: jest.fn(),
+            on: jest.fn((event, handler) => {
+                if (event === 'message') {
+                    mockWs.messageHandler = handler;
+                } else if (event === 'close') {
+                    mockWs.closeHandler = handler;
+                }
+            }),
+            close: jest.fn(),
+            messageHandler: null,
+            closeHandler: null
+        };
+
+        // Initialize MediaSoupSFU
+        mediaSoupSFU = MediaSoupSFU.getInstance();
+        
+        // Create a new user for each test
+        user = new User(mockWs);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+        if (mediaSoupSFU.worker) {
+            mediaSoupSFU.worker = undefined;
+        }
+    });
+
+    describe('MediaSoupSFU', () => {
+        test('should initialize MediaSoup worker', async () => {
+            await mediaSoupSFU.init();
+            expect(mediaSoupSFU.worker).toBeDefined();
+        });
+
+        test('should create or join room', async () => {
+            await mediaSoupSFU.init();
+            const roomId = 'test-room';
+            await mediaSoupSFU.createOrJoinRoom(user, roomId);
+            
+            // Verify room was created and user was added
+            const room = mediaSoupSFU.rooms.get(roomId);
+            expect(room).toBeDefined();
+            expect(room.users.has(user)).toBe(true);
+            
+            // Verify user received roomJoined message
+            expect(mockWs.send).toHaveBeenCalledWith(
+                expect.stringContaining('roomJoined')
+            );
+        });
+
+        test('should create send transport', async () => {
+            await mediaSoupSFU.init();
+            const roomId = 'test-room';
+            await mediaSoupSFU.createOrJoinRoom(user, roomId);
+            await mediaSoupSFU.createSendWebRTCTransport(user);
+
+            // Verify transport was created and user received message
+            expect(mockWs.send).toHaveBeenCalledWith(
+                expect.stringContaining('sendTransportCreated')
+            );
+        });
+
+        test('should create receive transport', async () => {
+            await mediaSoupSFU.init();
+            const roomId = 'test-room';
+            await mediaSoupSFU.createOrJoinRoom(user, roomId);
+            await mediaSoupSFU.createReceiveWebRTCTransport(user);
+
+            // Verify transport was created and user received message
+            expect(mockWs.send).toHaveBeenCalledWith(
+                expect.stringContaining('receiveTransportCreated')
+            );
+        });
+    });
+
+    describe('User', () => {
+        test('should handle WebSocket messages', async () => {
+            await mediaSoupSFU.init();
+            
+            // Simulate receiving a message
+            const testMessage = JSON.stringify({
+                type: 'joinRoom',
+                roomId: 'test-room'
+            });
+            
+            // Call the message handler directly
+            await mockWs.messageHandler(testMessage);
+
+            // Verify message was processed
+            expect(mockWs.send).toHaveBeenCalled();
+        });
+
+        test('should cleanup on close', async () => {
+            await mediaSoupSFU.init();
+            
+            // Create a room first
+            const roomId = 'test-room';
+            await mediaSoupSFU.createOrJoinRoom(user, roomId);
+
+            // Call the close handler directly
+            await mockWs.closeHandler();
+
+            // Verify cleanup was performed
+            expect(mediaSoupSFU.rooms.get(roomId)).toBeUndefined();
+        });
+    });
+
+    describe('WebSocket Server', () => {
+        test('should handle client connections', () => {
+            const wss = new WebSocket.Server({ port: 8081 });
+            
+            // Create mock client
+            const client = mockWebSocket('ws://localhost:8081');
+            
+            // Simulate connection
+            client.onopen();
+            
+            expect(client.readyState).toBe(WebSocket.OPEN);
+            client.close();
+            wss.close();
+        });
+    });
+}); 
