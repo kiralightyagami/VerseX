@@ -8,9 +8,17 @@ import GameControls from '@/components/game/GameControls';
 import GameMenu from '@/components/game/GameMenu';
 import Loading from '@/components/game/Loading';
 
+// Define the type for game data
+type GameData = {
+  worldId: string;
+  name: string;
+  map: string;
+  spawnPoint: { x: number; y: number };
+};
+
 export default function GamePage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [gameData, setGameData] = useState(null);
+  const [gameData, setGameData] = useState<GameData | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const searchParams = useSearchParams();
