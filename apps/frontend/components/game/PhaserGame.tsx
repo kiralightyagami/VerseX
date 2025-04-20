@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 
-// Prevent Phaser from trying to load the spector.js module
+
 if (typeof window !== 'undefined') {
   (window as any).__PHASER_SPECTOR_JS_INSTALLED = false;
 }
@@ -36,7 +36,7 @@ const PhaserGame: React.FC<PhaserGameProps> = ({ worldData }) => {
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 0 },
+          gravity: { x: 0, y: 0 },
           debug: false,
         },
       },

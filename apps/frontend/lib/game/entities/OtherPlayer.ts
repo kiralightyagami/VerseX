@@ -28,8 +28,8 @@ export default class OtherPlayer extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     
     
-    this.body.setSize(20, 32);
-    this.body.setOffset(6, 16);
+    this.body!.setSize(20, 32);
+    this.body!.setOffset(6, 16);
     
     
     this.nameText = scene.add.text(x, y - this.nameOffset, name, {

@@ -25,8 +25,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     
    
-    this.body.setSize(20, 32);
-    this.body.setOffset(6, 16);
+    this.body!.setSize(20, 32);
+    this.body!.setOffset(6, 16);
     
     // Create animations
     this.createAnimations();
@@ -71,7 +71,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
     
    
-    if (this.body.velocity.x === 0 && this.body.velocity.y === 0) {
+    if (this.body!.velocity.x === 0 && this.body!.velocity.y === 0) {
       // Get current animation key
       const currentAnim = this.anims.currentAnim;
       if (currentAnim) {
