@@ -7,12 +7,15 @@ import { ResourceController } from "../../controllers/resource.controller";
 
 export const router = Router();
 
-router.post("/signup", AuthController.signup);
-router.post("/signin", AuthController.signin);
+// Auth routes
+router.post("/auth/signup", AuthController.signup);
+router.post("/auth/signin", AuthController.signin);
 
+// Resource routes
 router.get("/elements", ResourceController.getElements);
 router.get("/avatars", ResourceController.getAvatars);
 
+// Other routes
 router.use("/user", userRouter)
 router.use("/space", spaceRouter)
 router.use("/admin", adminRouter)

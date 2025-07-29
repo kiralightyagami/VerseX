@@ -1,84 +1,201 @@
-# Turborepo starter
+# VerseX - 2D Metaverse Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **A vibrant 2D virtual universe where users can connect, collaborate, and create extraordinary experiences.**
 
-## Using this example
+VerseX is a comprehensive 2D metaverse application built with modern web technologies, enabling real-time multiplayer interactions, custom virtual spaces, and seamless communication through integrated video calls.
 
-Run the following command:
+## ✨ Features
 
-```sh
-npx create-turbo@latest
+### 🌐 Virtual Spaces
+- **Custom 2D Environments**: Create and customize your own virtual spaces with interactive elements
+- **Real-time Multiplayer**: Connect with users in shared virtual environments
+- **Interactive Elements**: Place and interact with various objects and decorations
+- **Space Management**: Full CRUD operations for managing your virtual spaces
+
+### 👥 Social Features  
+- **Real-time Communication**: WebSocket-powered instant messaging and interactions
+- **Video Calling**: Integrated WebRTC for voice and video communication within spaces
+- **Custom Avatars**: Personalize your virtual identity with custom avatar systems
+- **User Management**: Secure authentication and user role management
+
+### 🎮 Gaming Experience
+- **Phaser.js Integration**: Smooth 2D game rendering and physics
+- **Cross-platform**: Works seamlessly across desktop and mobile browsers
+- **Responsive Design**: Optimized UI for all screen sizes
+
+## 🏗️ Architecture
+
+This project is built as a **Turborepo monorepo** with the following structure:
+
+### 📱 Applications (`/apps`)
+
+- **`frontend/`** - React + Vite client application
+  - 🔧 **Tech Stack**: React 19, TypeScript, Tailwind CSS, Phaser.js
+  - 🎨 **Features**: Game canvas, user management, space creation
+  
+- **`ws/`** - WebSocket server for real-time communication
+  - 🔧 **Tech Stack**: Node.js, WebSocket, JWT authentication
+  - 🚀 **Purpose**: Real-time multiplayer interactions and messaging
+
+- **`http/`** - REST API server
+  - 🔧 **Tech Stack**: Node.js, Express/Fastify
+  - 🛠️ **Purpose**: User authentication, space management, data operations
+
+- **`webrtc/`** - WebRTC signaling server
+  - 🔧 **Tech Stack**: Node.js, MediaSoup
+  - 📹 **Purpose**: Video/voice communication infrastructure
+
+### 📦 Packages (`/packages`)
+
+- **`@repo/db`** - Database layer with Prisma ORM
+- **`@repo/ui`** - Shared UI components library
+- **`@repo/eslint-config`** - Shared ESLint configuration
+- **`@repo/typescript-config`** - Shared TypeScript configuration
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 18+ 
+- **pnpm** 9.0.0+
+- **PostgreSQL** database
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd VerseX
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   # Create .env files for each app
+   cp apps/frontend/.env.example apps/frontend/.env
+   cp apps/ws/.env.example apps/ws/.env
+   cp apps/http/.env.example apps/http/.env
+   cp apps/webrtc/.env.example apps/webrtc/.env
+   ```
+
+4. **Set up the database**
+   ```bash
+   cd packages/db
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+5. **Start development servers**
+   ```bash
+   # Start all services
+   pnpm dev
+   
+   # Or start individual services
+   pnpm dev --filter=frontend
+   pnpm dev --filter=ws
+   pnpm dev --filter=http
+   pnpm dev --filter=webrtc
+   ```
+
+## 📋 Available Scripts
+
+### Root Level Commands
+
+```bash
+# Development
+pnpm dev              # Start all apps in development mode
+pnpm build            # Build all apps and packages
+pnpm lint             # Lint all projects
+pnpm format           # Format code with Prettier
+pnpm check-types      # Type-check all TypeScript projects
 ```
 
-## What's inside?
+### Individual App Commands
 
-This Turborepo includes the following packages/apps:
+```bash
+# Frontend
+cd apps/frontend
+pnpm dev              # Start Vite dev server
+pnpm build            # Build for production
+pnpm start            # Preview production build
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+# Backend Services
+cd apps/ws            # WebSocket server
+cd apps/http          # HTTP API server  
+cd apps/webrtc        # WebRTC signaling server
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm start            # Start production server
 ```
 
-### Develop
+## 🗄️ Database Schema
 
-To develop all apps and packages, run the following command:
+The application uses **PostgreSQL** with **Prisma ORM**. Key entities include:
 
-```
-cd my-turborepo
-pnpm dev
-```
+- **Users**: Authentication and profile management
+- **Spaces**: Virtual environments with customizable dimensions
+- **Elements**: Interactive objects that can be placed in spaces
+- **Avatars**: User representation in the virtual world
+- **Maps**: Predefined space templates
 
-### Remote Caching
+## 🔧 Development
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Tech Stack
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Phaser.js
+- **Backend**: Node.js, WebSocket, WebRTC, JWT
+- **Database**: PostgreSQL, Prisma ORM
+- **Build Tool**: Turborepo for monorepo management
+- **Package Manager**: pnpm
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### Code Quality
 
-```
-cd my-turborepo
-npx turbo login
-```
+- **TypeScript** for type safety across all projects
+- **ESLint** for code linting with shared configurations
+- **Prettier** for consistent code formatting
+- **Turbo** for optimized build caching and task running
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🌟 Key Features in Detail
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Real-time Multiplayer
+- WebSocket connections for instant communication
+- Synchronized player movements and interactions
+- Real-time space updates and element placement
 
-```
-npx turbo link
-```
+### Video Communication  
+- WebRTC integration for peer-to-peer communication
+- In-space voice and video calls
+- Screen sharing capabilities
 
-## Useful Links
+### Customizable Spaces
+- Drag-and-drop space editor
+- Custom space dimensions and layouts
+- Interactive element placement system
+- Space templates and themes
 
-Learn more about the power of Turborepo:
+## 🤝 Contributing
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Useful Links
+
+- [Turborepo Documentation](https://turbo.build/repo/docs)
+- [Phaser.js Documentation](https://phaser.io/learn)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [WebRTC Documentation](https://webrtc.org/getting-started/)
+
+---
+
+**Built with ❤️ by Asvin Shirvas for the future of virtual collaboration**

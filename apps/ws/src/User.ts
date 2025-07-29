@@ -37,13 +37,20 @@ export class User {
                 case "join":
                     const spaceId = parsedData.payload.spaceId;
                     const token = parsedData.payload.token;
-                    const userId = (jwt.verify(token, JWT_PASSWORD) as JwtPayload).userId
-                    if (!userId) {
-                        this.ws.close()
-                        return
+                    try {
+                        const decoded = jwt.verify(token, JWT_PASSWORD) as JwtPayload;
+                        if (!decoded.userId) {
+                            console.error("Invalid token: no userId found");
+                            this.ws.close();
+                            return;
+                        }
+                        this.userId = decoded.userId;
+                    } catch (error) {
+                        console.error("JWT verification failed:", error);
+                        this.ws.close();
+                        return;
                     }
                     
-                    this.userId = userId
                     const space = await client.space.findFirst({
                         where: {
                             id: spaceId

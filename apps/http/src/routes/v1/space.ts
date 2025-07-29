@@ -4,7 +4,7 @@ import { SpaceController } from "../../controllers/space.controller";
 
 export const spaceRouter = Router();
 
-spaceRouter.post("/", userMiddleware, SpaceController.createSpace);
+spaceRouter.post("/create", userMiddleware, SpaceController.createSpace);
 spaceRouter.delete("/element", userMiddleware, SpaceController.deleteElement);
 spaceRouter.delete("/:spaceId", userMiddleware, SpaceController.deleteSpace);
 spaceRouter.get("/all", userMiddleware, SpaceController.getAllSpaces);
