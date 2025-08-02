@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Rocket className="h-4 w-4 text-primary-700" />
-            <span>SpaceApp © 2025</span>
+            <span>VerseX © 2025</span>
           </div>
           <div className="flex items-center gap-5 text-sm">
             <span className="text-foreground-300">●</span>

@@ -19,11 +19,14 @@ const Navbar = () => {
     }
 
     return (
-        <header className="flex items-center justify-between px-4 sm:px-32 py-3 border-b">
-            <div className="flex items-center space-x-12">
+        <header className="flex items-center justify-between px-4 sm:px-15 py-3 border-b bg-background-950">
+            <div className="flex items-center justify-between space-x-12">
                 <Link to="/" className="text-xl font-bold">VerseX</Link>
                 <nav>
-                    <Link to="/spaces" className="hover:opacity-50 transition-opacity">My Spaces</Link>
+                    <Link to="/spaces" className=" text-sm text-white hover:text-neutral-400 transition-duration-300">Spaces</Link>
+                </nav>
+                <nav>
+                    <Link to="/spaces" className=" text-sm text-white hover:text-neutral-400 transition-duration-300">Join</Link>
                 </nav>
             </div>
             {!isLogin ? <div className="flex gap-4">
