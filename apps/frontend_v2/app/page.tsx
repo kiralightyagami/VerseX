@@ -2,6 +2,7 @@ import { Container } from "./components/container";
 import Navbar from "./components/navbar";
 import { Hero } from "./components/hero";
 import { LightRays } from "./components/light-rays";
+import { Footer } from "./components/footer";
 
 
 export default function Home() {
@@ -15,7 +16,8 @@ export default function Home() {
         <LightRays />
         <Navbar />
         <Hero />
-        </Container>
+        </Container>  
+        <Footer />
     </div>
   );
 }
