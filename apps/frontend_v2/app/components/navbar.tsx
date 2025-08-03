@@ -46,7 +46,7 @@ const Navbar = () => {
     <>
     <Link href="/signin">
     <button
-        className="relative cursor-pointer shadow-input rounded-xl border border-neutral-700 px-4 py-2 text-white hover:bg-neutral-700 transition-colors duration-400"
+        className="relative cursor-pointer bg-neutral-900 shadow-input rounded-xl border border-neutral-700 px-4 py-2 text-white hover:bg-neutral-700 transition-colors duration-400"
     >
         <div className='absolute inset-x-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-sky-600 to-transparent'></div>
         Login

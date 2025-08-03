@@ -29,9 +29,9 @@ export const Hero = () => {
     </button>
     </Link>
     </div>
-    <div className='relative mt-6 max-w-7xl mx-auto'>  
-    <div className='absolute inset-y-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-sky-600 to-transparent'></div>
-    <Image src="/photo.png" alt="hero" width={1000} height={1000} className='rounded-xl w-full object-cover object-left-top border border-neutral-600 shadow-md' />
+    <div className='relative z-20 mt-6 max-w-7xl mx-auto'>  
+    <div className='relative inset-y-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-sky-600 to-transparent'></div>
+    <Image src="/photo.png" alt="hero" width={1000} height={1000} className='relative z-20 rounded-xl w-full object-cover object-left-top border border-neutral-600 shadow-md' />
     </div>
     </div>
   )
