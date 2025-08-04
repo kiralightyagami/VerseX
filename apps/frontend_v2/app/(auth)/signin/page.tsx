@@ -49,7 +49,7 @@ import Link from "next/link";
     };
 
     return (
-        <div className="shadow-input mx-auto w-full max-w-md mt-30 rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black ">
+        <div className="shadow-input mx-auto w-full max-w-md mt-10 rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black ">
         <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
             Welcome Back!
         </h2>
