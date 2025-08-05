@@ -6,19 +6,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '../../components/Skeleton';
 import { Container } from '../../components/container';
-import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { cn } from '../../lib/utils';
+import CreateSpace from '../../components/CreateSpace';
+import { Space } from '../../../types';
 
-
-
-
-export interface Space {
-    id: string;
-    name: string;
-    dimensions: string;
-    thumbnail: string;
-}
 
 export default function MySpaces() {
     const router = useRouter();
@@ -140,6 +132,7 @@ export default function MySpaces() {
                     ))}
                 </div>}
             </div>
+            <CreateSpace isOpen={isCreateSpaceModalOpen} onClose={() => setIsCreateSpaceModalOpen(false)} setMockSpaces={setMockSpaces} />
         </Container>
     );
 }
@@ -175,7 +168,7 @@ function SpaceListSkeleton() {
     )
 }
 
-const LabelInputContainer = ({
+export const LabelInputContainer = ({
     children,
     className,
     }: {
