@@ -5,6 +5,10 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '../../components/Skeleton';
+import { Container } from '../../components/container';
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { cn } from '../../lib/utils';
 
 
 
@@ -77,31 +81,24 @@ export default function MySpaces() {
     );
 
     return (
-        <div className="min-h-screen relative overflow-hidden">
+        <Container>
             <div className="max-w-7xl relative mx-auto p-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold">My Spaces</h1>
-                        <p className="mt-1 text-foreground-100">Manage and monitor your virtual spaces</p>
+                        <h1 className="text-2xl font-semibold tracking-tight">My Spaces</h1>
+                        <p className="mt-1 text-sm text-neutral-400">Manage and monitor your virtual spaces</p>
                     </div>
-                    <button
-                        onClick={() => setIsCreateSpaceModalOpen(true)}
-                        className="flex items-center gap-2 bg-primary-400 text-foreground-950 px-4 py-2 rounded-lg hover:opacity-90 transition-all cursor-pointer hover:-translate-y-1"
-                    >
-                        <Plus className="h-5 w-5" />
-                        Create Space
+                    <button  onClick={() => setIsCreateSpaceModalOpen(true)} className="relative cursor-pointer bg-neutral-900 shadow-input rounded-xl border border-neutral-700 px-4 py-2 text-white hover:bg-neutral-700 transition-colors duration-400">
+                    <div className='absolute inset-x-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-sky-600 to-transparent'></div>
+                    <div className='flex items-center gap-1'>
+                    <Plus className="h-5 w-5" />Create Space
+                    </div>
                     </button>
                 </div>
                 <div className="relative mb-8">
-                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-foreground-100" />
-                    </div>
-                    <input
-                        type="text"
-                        className="w-full pl-10 pr-4 py-3 bg-foreground-300/30 rounded-lg border border-foreground-300/40 focus:outline-hidden focus:ring-2 focus:ring-foreground-300/80"
-                        placeholder="Search spaces..."
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <LabelInputContainer className="mb-4">
+                        <Input id="search" placeholder="🔍 Search spaces..." type="text" onChange={(e) => setSearchTerm(e.target.value)} />
+                    </LabelInputContainer>
                 </div>
                 {loading ? <SpaceListSkeleton /> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredSpaces.map(space => (
@@ -143,7 +140,7 @@ export default function MySpaces() {
                     ))}
                 </div>}
             </div>
-        </div>
+        </Container>
     );
 }
 
@@ -177,3 +174,17 @@ function SpaceListSkeleton() {
         </div>
     )
 }
+
+const LabelInputContainer = ({
+    children,
+    className,
+    }: {
+    children: React.ReactNode;
+    className?: string;
+    }) => {
+    return (
+        <div className={cn("flex w-full flex-col space-y-2", className)}>
+        {children}
+        </div>
+    );
+    };
