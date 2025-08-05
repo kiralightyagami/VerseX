@@ -20,7 +20,7 @@ const [success, setSuccess] = useState("");
 const [formData, setFormData] = useState({
     Id: "",
 });
-
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const handleSubmit = async (e: any) => {
     e.preventDefault();
     setFormData({
@@ -29,7 +29,7 @@ const handleSubmit = async (e: any) => {
     console.log(formData);
     setIsLoading(true);
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/space/${e.target.Id.value}`, {
+        const response = await axios.get(`${backendUrl}api/v1/space/${e.target.Id.value}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }

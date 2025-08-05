@@ -3,11 +3,7 @@ import React, { useState } from "react";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { cn } from "../../lib/utils";
-import {
-IconBrandGithub,
-IconBrandGoogle,
-IconBrandOnlyfans,
-} from "@tabler/icons-react";
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -22,25 +18,26 @@ const [formData, setFormData] = useState({
     password: "",
     type: "user"
 });
-
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const data = e.target;
     console.log(e.target.username.value, e.target.password.value);
     setFormData({
-    username: e.target.username.value,
-    password: e.target.password.value,
+    username: data.username.value,
+    password: data.password.value,
     type: "user"
     });
     console.log(formData);
     setIsLoading(true);
     try {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/auth/signup`, {
-        username: e.target.username.value,
-        password: e.target.password.value,
+    const response = await axios.post(`${backendUrl}api/v1/auth/signup`, {
+        username: data.username.value,
+        password: data.password.value,
         type: "user"
-    });
+    })
     if (response.status == 200) {
-        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('token', response.data.token);
         setSuccess("Signup successful");
         router.push('/');   
     }

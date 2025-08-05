@@ -3,11 +3,6 @@
     import { Label } from "../../components/ui/label";
     import { Input } from "../../components/ui/input";
     import { cn } from "../../lib/utils";
-    import {
-    IconBrandGithub,
-    IconBrandGoogle,
-    IconBrandOnlyfans,
-    } from "@tabler/icons-react";
     import axios from "axios";
     import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,7 +16,7 @@ import Link from "next/link";
         username: "",
         password: "",
     });
-
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         console.log(e.target.username.value, e.target.password.value);
@@ -32,7 +27,7 @@ import Link from "next/link";
         console.log(formData);
         setIsLoading(true);
         try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/auth/signin`, {
+        const response = await axios.post(`${backendUrl}api/v1/auth/signin`, {
             username: e.target.username.value,
             password: e.target.password.value,
         });

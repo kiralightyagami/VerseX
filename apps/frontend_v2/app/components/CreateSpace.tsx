@@ -51,14 +51,14 @@ const CreateSpace = ({ isOpen, onClose, setMockSpaces }: CreateSpaceModalProps) 
     const [mapId, setMapId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { register, reset, formState: { errors } } = useForm<FormData>();
-
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         const data = e.target;
         if (mapId === null) return alert("Please select the Map.")
         setIsLoading(true);
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/space/create`, {
+            const response = await axios.post(`${backendUrl}api/v1/space/create`, {
                 name: data.name.value,
                 dimensions: '960x640',
                 //Todo: get the mapId from the database

@@ -5,7 +5,7 @@ import MultiplayerGame from "../../lib/Multiplayer";
 import { useParams } from "next/navigation";
 import { VideoCall } from "../VideoCall";
 
-function GameCanvas() {
+export default function GameCanvas() {
     const params = useParams();
     const gameContainerRef = useRef(null)
 
@@ -34,7 +34,7 @@ function GameCanvas() {
 
     return (
         <>
-            <div className="h-screen w-screen flex items-center justify-center overflow-hidden">
+            <div className="h-screen w-screen flex items-center justify-center overflow-hidden scrollbar-hide">
                 <div id="phaser-game" key='phaser-gamer' ref={gameContainerRef} />
                 <VideoCall />
             </div>
@@ -42,4 +42,3 @@ function GameCanvas() {
     )
 }
 
-export default GameCanvas

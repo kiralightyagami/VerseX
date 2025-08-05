@@ -5,8 +5,9 @@ export interface Space {
     thumbnail: string;
 }
 
-interface Card {
+export interface Card {
     id: number;
     src: string;
     title: string;
 }
+

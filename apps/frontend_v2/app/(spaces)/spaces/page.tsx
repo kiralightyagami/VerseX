@@ -20,11 +20,11 @@ export default function MySpaces() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCreateSpaceModalOpen, setIsCreateSpaceModalOpen] = useState(false);
     const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
-
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     useEffect(() => {
         const fetchSpaces = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/space/all`, {
+                const response = await axios.get(`${backendUrl}api/v1/space/all`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -53,7 +53,7 @@ export default function MySpaces() {
 
     const deleteSpace = async () => {
         try {
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/space/${selectedSpaceId}`, {
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/space/${selectedSpaceId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
