@@ -77,7 +77,7 @@ return (
         <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
         <div className="text-center text-sm text-neutral-300">
         Create your own space?
-            <Link href="/spaces/create" className=" text-sky-600 hover:text-neutral-800 dark:hover:text-neutral-200">  Launch space</Link>
+            <Link href="/spaces" className=" text-sky-600 hover:text-neutral-800 dark:hover:text-neutral-200">  Launch space</Link>
         </div>
 
     </form>
