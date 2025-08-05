@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Share, Video, VideoOff, MessageSquare, Settings } from "lucide-react"
 import * as mediasoup from 'mediasoup-client';
-import { useParams } from "react-router";
-import { Chat } from "./Chat";
+import { useParams } from "next/navigation";
+import { Chat } from "./Chat"; 
 
 
 export const VideoCall = () => {
