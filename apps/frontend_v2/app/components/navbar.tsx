@@ -8,7 +8,7 @@ const Navbar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        let token = localStorage.getItem('token')
+        const token = localStorage.getItem('token')
         if (token) {
             setIsLogin(false)
         }

@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { cn } from "../lib/utils";
 import { Label } from "./ui/label";
-import { LabelInputContainer } from "../(spaces)/spaces/page";
+import { LabelInputContainer } from "./ui/label-input-container";
 import { Input } from "./ui/input";
 
 export const Chat = ({ ws, className, setIsChatOpen }: { ws: WebSocket, className: string, setIsChatOpen: Dispatch<SetStateAction<boolean>> }) => {

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "../../components/Skeleton";
 import { Container } from "../../components/container";
 import { Input } from "../../components/ui/input";
+import { LabelInputContainer } from "../../components/ui/label-input-container";
 import { cn } from "../../lib/utils";
 import CreateSpace from "../../components/CreateSpace";
 import { Space } from "../../../types";
@@ -209,16 +210,4 @@ function SpaceListSkeleton() {
   );
 }
 
-export const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex w-full flex-col space-y-2", className)}>
-      {children}
-    </div>
-  );
-};
+

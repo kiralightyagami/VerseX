@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "../../globals.css";
-import Image from "next/image";
-import Link from "next/link";
+
 
 
 export const metadata: Metadata = {

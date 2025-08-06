@@ -7,8 +7,8 @@ import { Space } from '../../types';
 import { SelectMap } from './SelectMap';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { LabelInputContainer } from '../(spaces)/spaces/page';
-import { BottomGradient } from '../(auth)/signup/page';
+import { LabelInputContainer } from './ui/label-input-container';
+import { BottomGradient } from './ui/bottom-gradient';
 
 interface FormData {
     [key: string]: string
