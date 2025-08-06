@@ -14,6 +14,16 @@ interface FormData {
     [key: string]: string
 }
 
+interface CreateSpaceResponse {
+    space: {
+        id: string;
+        name: string;
+        width: number;
+        height: number;
+        thumbnail: string;
+    }
+}
+
 interface CreateSpaceModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -58,7 +68,7 @@ const CreateSpace = ({ isOpen, onClose, setMockSpaces }: CreateSpaceModalProps) 
         if (mapId === null) return alert("Please select the Map.")
         setIsLoading(true);
         try {
-            const response = await axios.post(`${backendUrl}api/v1/space/create`, {
+            const response = await axios.post<CreateSpaceResponse>(`${backendUrl}api/v1/space/create`, {
                 name: data.name.value,
                 dimensions: '960x640',
                 //Todo: get the mapId from the database
@@ -69,6 +79,7 @@ const CreateSpace = ({ isOpen, onClose, setMockSpaces }: CreateSpaceModalProps) 
                 }
             })
             if (response.status === 200) {
+                console.log(response.data);
                 setMockSpaces(data => [...data, { id: response.data.space.id, name: response.data.space.name, dimensions: `${response.data.space.width}x${response.data.space.height}`, thumbnail: response.data.space.thumbnail }])
             }
         } catch (error) {

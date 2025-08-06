@@ -28,9 +28,9 @@ export default function MySpaces() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setMockSpaces(response.data.spaces);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
+        setMockSpaces((response.data as { spaces: Space[] }).spaces);
+      } catch (error: any) {
+        if (error.isAxiosError) {
           if (error.status == 401 || error.status == 403) {
             localStorage.removeItem("token");
             router.push("/signin");
@@ -50,10 +50,10 @@ export default function MySpaces() {
     setIsModalOpen(true);
   };
 
-  const deleteSpace = async () => {
+  const handleDeleteSpace = async (spaceId: string) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/space/${selectedSpaceId}`,
+        `${backendUrl}api/v1/space/${spaceId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -62,7 +62,7 @@ export default function MySpaces() {
       );
       if (response.status === 200) {
         setMockSpaces((prevSpaces) =>
-          prevSpaces.filter((space) => space.id !== selectedSpaceId),
+          prevSpaces.filter((space) => space.id !== spaceId),
         );
       }
     } catch (error) {
@@ -132,6 +132,7 @@ export default function MySpaces() {
                       strokeWidth={3}
                       className="text-destructive h-4 w-4 text-red-500 hover:text-red-600"
                     />
+
                   </div>
                 </div>
                 <div className="space-y-3">

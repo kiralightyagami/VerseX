@@ -32,7 +32,7 @@ import Link from "next/link";
             password: e.target.password.value,
         });
         if (response.status == 200) {
-            localStorage.setItem('token', response.data.token)
+            localStorage.setItem('token', (response.data as { token: string }).token)
             setSuccess("Login successful");
             router.push('/');
         }

@@ -38,7 +38,11 @@ export const VideoCall = () => {
             };
 
             wsRef.current.onerror = (error) => {
-                console.error('WebSocket error:', error);
+
+                // Attempt to reconnect after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+                console.log('WebSocket connection closed');
+                setRemoteStreams([]);
                 // Attempt to reconnect after 5 seconds
                 setTimeout(connectWebSocket, 5000);
             };

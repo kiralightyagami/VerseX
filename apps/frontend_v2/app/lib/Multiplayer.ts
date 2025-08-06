@@ -23,7 +23,7 @@ export default class MultiplayerGame extends Scene {
     create() {
         this.createMap()
         this.createAnimation()
-        this.ws = new WebSocket("ws://localhost:3001");
+        this.ws = new WebSocket("ws://localhost:8080");
 
         this.ws.onopen = () => {
             console.log("Connected to WebSocket server");

@@ -19,6 +19,7 @@ const [formData, setFormData] = useState({
     type: "user"
 });
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+console.log(backendUrl);
 const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = e.target;
@@ -37,7 +38,7 @@ const handleSubmit = async (e: any) => {
         type: "user"
     })
     if (response.status == 200) {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', (response.data as { token: string }).token);
         setSuccess("Signup successful");
         router.push('/');   
     }
