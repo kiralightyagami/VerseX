@@ -1,9 +1,9 @@
 import { WebSocket } from "ws";
 import { RoomManager } from "./RoomManager";
 import { OutgoingMessage } from "./types";
-import client from "@repo/db/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_PASSWORD } from "./config";
+import client from "@repo/db/client";
 
 function getRandomString(length: number) {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -27,30 +27,24 @@ export class User {
         this.x = 0;
         this.y = 0;
         this.ws = ws;
-        this.initHandlers()
+        this.initHandler()
     }
 
-    initHandlers() {
-        this.ws.on("message", async (data) => {   
+    initHandler() {
+        this.ws.on("message", async (data) => {
             const parsedData = JSON.parse(data.toString());
+            console.log('parseddDataa', parsedData);
+
             switch (parsedData.type) {
                 case "join":
                     const spaceId = parsedData.payload.spaceId;
                     const token = parsedData.payload.token;
-                    try {
-                        const decoded = jwt.verify(token, JWT_PASSWORD) as JwtPayload;
-                        if (!decoded.userId) {
-                            console.error("Invalid token: no userId found");
-                            this.ws.close();
-                            return;
-                        }
-                        this.userId = decoded.userId;
-                    } catch (error) {
-                        console.error("JWT verification failed:", error);
-                        this.ws.close();
-                        return;
+                    const userId = (jwt.verify(token, JWT_PASSWORD!) as JwtPayload).userId
+                    if (!userId) {
+                        this.ws.close()
+                        return
                     }
-                    
+                    this.userId = userId
                     const space = await client.space.findFirst({
                         where: {
                             id: spaceId
@@ -60,8 +54,16 @@ export class User {
                         this.ws.close()
                         return;
                     }
-                    
                     this.spaceId = spaceId
+                    if (RoomManager.getInstance().rooms.get(spaceId)?.find(x => x.userId === userId)) {
+                        this.send({
+                            type: "error",
+                            payload: {
+                                message: "User already in room"
+                            }
+                        });
+                        return;
+                    }
                     RoomManager.getInstance().addUser(spaceId, this);
                     this.x = Math.floor(Math.random() * space?.width);
                     this.y = Math.floor(Math.random() * space?.height);
@@ -72,10 +74,9 @@ export class User {
                                 x: this.x,
                                 y: this.y
                             },
-                            users: RoomManager.getInstance().rooms.get(spaceId)?.filter(x => x.id !== this.id)?.map((u) => ({id: u.id})) ?? []
+                            users: RoomManager.getInstance().rooms.get(spaceId)?.filter(x => x.userId !== this.userId)?.map((u) => ({ id: u.userId })) ?? []
                         }
                     });
-                    
                     RoomManager.getInstance().broadcast({
                         type: "user-joined",
                         payload: {
@@ -85,34 +86,33 @@ export class User {
                         }
                     }, this, this.spaceId!);
                     break;
-                case "move":
-                    const moveX = parsedData.payload.x;
-                    const moveY = parsedData.payload.y;
-                    const xDisplacement = Math.abs(this.x - moveX);
-                    const yDisplacement = Math.abs(this.y - moveY);
-                    if ((xDisplacement == 1 && yDisplacement== 0) || (xDisplacement == 0 && yDisplacement == 1)) {
-                        this.x = moveX;
-                        this.y = moveY;
-                        RoomManager.getInstance().broadcast({
-                            type: "movement",
+
+                case "player-moved":
+                    if (!this.spaceId || !this.userId) {
+                        this.send({
+                            type: "error",
                             payload: {
-                                x: this.x,
-                                y: this.y
+                                message: "Player not in a valid space"
                             }
-                        }, this, this.spaceId!);
+                        });
                         return;
                     }
-                    
-                    this.send({
-                        type: "movement-rejected",
+
+                    const { x, y, direction } = parsedData.payload;
+                    this.x = x;
+                    this.y = y;
+                    RoomManager.getInstance().broadcast({
+                        type: "player-moved",
                         payload: {
-                            x: this.x,
-                            y: this.y
+                            userId: this.userId,
+                            x,
+                            y,
+                            direction
                         }
-                    });
-                    
+                    }, this, this.spaceId);
+                    break;
             }
-        });
+        })
     }
 
     destroy() {
