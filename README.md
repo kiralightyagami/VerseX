@@ -175,9 +175,8 @@ The application uses **PostgreSQL** with **Prisma ORM**. Key entities include:
 ### Video Communication  
 - WebRTC integration for peer-to-peer communication
 - In-space voice and video calls
-- Screen sharing capabilities
 
-### Customizable Spaces
+### Customizable Spaces(coming soon)
 - Drag-and-drop space editor
 - Custom space dimensions and layouts
 - Interactive element placement system
