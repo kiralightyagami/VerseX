@@ -6,9 +6,9 @@ VerseX is a comprehensive 2D metaverse application built with modern web technol
 
 ## 🎥 Demo
 
-[![VerseX Demo](https://img.youtube.com/vi/AERnmOy0_Ng/0.jpg)](https://youtu.be/AERnmOy0_Ng)
+[![VerseX Demo](https://img.youtube.com/vi/F-lBNdje1LE/0.jpg)](https://youtu.be/AERnmOy0_Ng)
 
-**[Watch the Demo Video](https://youtu.be/AERnmOy0_Ng)**
+**[Watch the Demo Video](https://youtu.be/F-lBNdje1LE)**
 
 ## ✨ Features
 
